@@ -1,0 +1,41 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h2>График регрессии</h2>
+    <div class="row shadow-sm border-0">
+        <form id="filter-form" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <select name="curr_x" id="currencyX" class="form-select">
+                        {% for item in currencies %}
+                            <option value="{{ item.letter_code }}" {% if item.letter_code == selected_codes.0 %}selected{% endif %}>
+                                {{ item.letter_code }} ({{ item.currency }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <label for="currencyX">Валюта оси X</label>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <select name="curr_y" id="currencyY" class="form-select">
+                        {% for item in currencies %}
+                            <option value="{{ item.letter_code }}" {% if item.letter_code == selected_codes.1 %}selected{% endif %}>
+                                {{ item.letter_code }} ({{ item.currency }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <label for="currencyY">Валюта оси Y (Зависимая)</label>
+                </div>
+            </div>
+    <div class="container shadow-sm border-0 p-3" id="chart-container">
+        {{ chart|safe }}
+    </div>
+</div>
+<script src="{% static 'js/charts.js' %}"></script>
+<script>
+    initFilterForm('filter-form');
+</script>
+{% endblock %}

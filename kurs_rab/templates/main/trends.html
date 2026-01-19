@@ -1,0 +1,53 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Грфик курсов</h2>
+    <hr>
+    <div class="box shadow-sm border-0 p-3 mb-4">
+        <form id="filter-form" method="GET" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="currencySelect" class="col-form-label">Выберите валюту:</label>
+            </div>
+            <div class="col-auto">
+                <select name="currency" id="currencySelect" class="form-select">
+                    {% for item in currencies %}
+                        <option value="{{ item.letter_code }}" {% if item.letter_code == selected_currency %}selected{% endif %}>
+                            {{ item.letter_code }} ({{ item.currency }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="box shadow-sm border-0 p-3" id="chart-container">
+        {{ chart|safe }}
+    </div>
+</div>
+<script src="{% static 'js/charts.js' %}"></script>
+<script>
+document.getElementById('filter-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const currency = document.getElementById('currencySelect').value;
+    const container = document.getElementById('chart-container');    
+    container.style.opacity = '0.3';
+    fetch(`?currency=${currency}`, {
+        headers: {
+            'x-requested-with': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        container.innerHTML = html;
+        container.style.opacity = '1';        
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement("script");
+            newScript.text = oldScript.text;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    });
+});
+initFilterForm('filter-form');
+</script>
+{% endblock %}

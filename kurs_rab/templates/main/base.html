@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru", id="main-html">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Курсовой проект{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        // Мгновенная проверка темы до отрисовки страницы
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+    <style>
+        #sidebar { 
+            min-width: 250px; 
+            max-width: 250px; 
+            min-height: 100vh; 
+            transition: all 0.3s ease;
+            position: fixed;
+            background-color: var(--bs-body-tertiary);
+        }
+        #sidebar.collapsed { 
+            margin-left: -250px; 
+        }
+        .content-area {
+            width: 100%;
+            margin-left: 250px;
+            transition: all 0.5s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bs-body-tertiary);
+        } 
+        #sidebar.collapsed + .content-area {
+            margin-left: 0;
+        }
+        html, body, div, nav, aside, main, header, footer, p, h1, h2, h3, h4, h5, h6, span, label {
+            transition: background-color 0.5s ease, 
+                        color 0.5s ease, 
+                        border-color 0.5s ease, 
+                        box-shadow 0.5s ease,
+                        fill 0.5s ease;
+        }
+        .card, .btn, .form-control, .form-select {
+            transition: background-color 0.5s ease, 
+                        color 0.5s ease, 
+                        border-color 0.5s ease, 
+                        transform 0.2s ease-out,
+                        box-shadow 0.3s ease-in-out !important;
+        }
+        .form-floating > label::after {
+            transition: background-color 0.5s ease !important;
+            }
+            .form-floating > label,
+            .form-floating > .form-control:focus ~ label,
+            .form-floating > .form-control:not(:placeholder-shown) ~ label,
+            .form-floating > .form-select ~ label {
+                transition: transform 0.2s ease-in-out, 
+                            color 0.5s ease-in-out, 
+                            background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <nav id="sidebar" class="p-3">
+            <h4 class="border-bottom">Меню</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="/" class="nav-link text-muted border-0 text-center btn btn-primary mt-auto" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.5">Главная</a></li>
+                <li class="nav-item"><a href="/heatmap/" class="nav-link text-muted border-0 text-center btn btn-light mt-auto" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.5">Тепловые карты</a></li>
+                <li class="nav-item"><a href="/trends/" class="nav-link text-muted border-0 text-center btn btn-light mt-auto" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.5">Грфик курсов</a></li>
+                <li class="nav-item"><a href="/regressions/" class="nav-link text-muted border-0 text-center btn btn-light mt-auto" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.5">Регрессии</a></li>
+            </ul>
+            <hr>
+            <a href="https://github.com/denis-buhner" class="btn text-muted btn-outline-secondary btn-outline-secondary w-100" target="_blank">GitHub</a>
+        </nav>
+        <div class="content-area">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary">
+                        <i class="bi bi-list">☰</i>
+                    </button>
+                    <div class="ms-auto d-flex gap-2">
+                        <button class="btn btn-outline-secondary" id="themeToggle"><span id="themeIcon">☀️</span></button>
+                    </div>
+                </div>
+            </nav>
+            <div class="    -fluid p-4">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"> </script>
+    <script>
+        // Скрытие меню
+        document.getElementById('sidebarCollapse').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.getElementById('main-html');
+        // Фазы для перехода ТЕМНАЯ -> СВЕТЛАЯ (Растущая луна)
+        const toLightPhases = ['🌑', '🌒', '🌓', '🌔', '☀️'];
+        // Фазы для перехода СВЕТЛАЯ -> ТЕМНАЯ (Убывающая луна)
+        const toDarkPhases = ['☀️', '🌖', '🌗', '🌘', '🌑'];
+        function animateMoon(newTheme) {
+            const isLight = newTheme === 'light';
+            const phases = isLight ? toLightPhases : toDarkPhases;
+            let i = 0;
+            
+            const interval = setInterval(() => {
+                themeIcon.innerText = phases[i];
+                i++;
+                
+                if (i >= phases.length) {
+                    clearInterval(interval);
+                }
+            }, 35);
+        }
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Переключаем тему
+            htmlElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Запускаем специфичную анимацию
+            animateMoon(newTheme);
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+        const currentTheme = htmlElement.getAttribute('data-bs-theme');
+        themeIcon.innerText = currentTheme === 'dark' ? '🌑' : '☀️';
+    });
+    </script>
+</body>
+</html>
