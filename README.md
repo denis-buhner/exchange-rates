@@ -30,4 +30,4 @@
   <img src="regressionData.png"/>
 </div>
 
-ссылка для доступа к сайту:<https://denisbuhner.pythonanywhere.com/>
+ссылка для доступа к сайту: <https://denisbuhner.pythonanywhere.com/> (для пользователей из России, необходим VPN)
